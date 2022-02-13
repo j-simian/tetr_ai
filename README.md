@@ -11,3 +11,7 @@ Usage:
   3. Add score, timer, 40L mode
   4. Train neural network to play.
 
+
+
+Made using pygame graphics, nord colour theme (https://www.nordtheme.com) and the NEAT genetic AI algorithm
+
