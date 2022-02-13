@@ -60,6 +60,7 @@ def updateBoard():
 
 def tetris(i):
     global score
+    global board
     score += 1000
     k=i
     while(k<len(board)-1):
@@ -98,16 +99,26 @@ class Tetromino:
     y = -1
     type = "err" # "err" | "O" | "I" | "T" | "L" | "J" | "S" | "Z"
     rotation = 0
-    lowerBoundary = 1
     globalIDCounter = 0
 
     def rotate(self):
        self.rotation = (self.rotation+1)%4
        updateBoard()
-       self.lowerBoundary = min(shapeMasks[self.type][self.rotation], key=lambda i : i[1])[1]
+
+    def getLowerBoundary(self):
+        return min(shapeMasks[self.type][self.rotation], key=lambda i : i[1])[1]
+
+    def getUpperBoundary(self):
+        return max(shapeMasks[self.type][self.rotation], key=lambda i : i[1])[1]
+
+    def getLeftBoundary(self):
+        return min(shapeMasks[self.type][self.rotation], key=lambda i : i[0])[0]
+
+    def getRightBoundary(self):
+        return max(shapeMasks[self.type][self.rotation], key=lambda i : i[0])[0]
 
     def tick(self, board):
-        if self.y + self.lowerBoundary <= 0:
+        if self.y + self.getLowerBoundary() <= 0:
             self.kill()
         if self.project() == 0:
             self.kill()
@@ -135,6 +146,7 @@ class Tetromino:
 
     def hardDrop(self):
         self.y -= self.project() 
+        updateBoard()
 
     def moveLeft(self):
         can = True
@@ -146,6 +158,7 @@ class Tetromino:
                 can = False
         if can:
             self.x -= 1
+        updateBoard()
 
     def moveRight(self):
         can = True
@@ -157,6 +170,7 @@ class Tetromino:
                 can = False
         if can:
             self.x += 1
+        updateBoard()
 
     def __init__(self, type):
         self.id = 0x00B00000+Tetromino.nextId()
