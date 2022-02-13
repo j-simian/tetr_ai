@@ -44,24 +44,7 @@ def main():
             state.tickBoard()
         tickCounter += 1
         tickCounter %= 1000
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == ui.key_rotate:
-                    state.tetrominoes[state.tetrInPlay].rotate()
-                if event.key == ui.key_left:
-                    state.tetrominoes[state.tetrInPlay].moveLeft()
-                    r = Timer(0.30, checkHeld, [True])
-                    r.start()
-                if event.key == ui.key_right:
-                    state.tetrominoes[state.tetrInPlay].moveRight()
-                    r = Timer(0.30, checkHeld, [False])
-                    r.start()
-                if event.key == ui.key_hard_drop:
-                    state.tetrominoes[state.tetrInPlay].hardDrop()
-                if event.key == ui.key_hold:
-                    state.hold()
-            if event.type == pygame.QUIT:
-                running = False
+        ui.handleUI(pygame.event.get())
     pygame.quit()
 
 def render():

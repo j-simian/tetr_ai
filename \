@@ -1,4 +1,3 @@
-from threading import Timer
 import pygame
 import state
 
@@ -10,30 +9,22 @@ key_drop = pygame.K_s
 key_hard_drop = pygame.K_SPACE
 key_rotate = pygame.K_w
 
-def checkHeld(left):
-    if pygame.key.get_pressed()[key_left if left else key_right]:
-        for i in range(0, 10):
-            if left:
-                state.tetrominoes[state.tetrInPlay].moveLeft() 
-            else:
-                state.tetrominoes[state.tetrInPlay].moveRight() 
-
 def handleUI(events):
     for event in events:
         if event.type == pygame.KEYDOWN:
-            if event.key == key_rotate:
+            if event.key == ui.key_rotate:
                 state.tetrominoes[state.tetrInPlay].rotate()
-            if event.key == key_left:
+            if event.key == ui.key_left:
                 state.tetrominoes[state.tetrInPlay].moveLeft()
                 r = Timer(0.30, checkHeld, [True])
                 r.start()
-            if event.key == key_right:
+            if event.key == ui.key_right:
                 state.tetrominoes[state.tetrInPlay].moveRight()
                 r = Timer(0.30, checkHeld, [False])
                 r.start()
-            if event.key == key_hard_drop:
+            if event.key == ui.key_hard_drop:
                 state.tetrominoes[state.tetrInPlay].hardDrop()
-            if event.key == key_hold:
+            if event.key == ui.key_hold:
                 state.hold()
         if event.type == pygame.QUIT:
             running = False
