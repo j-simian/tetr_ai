@@ -35,7 +35,7 @@ def initBoard():
 def spawnTetromino():
     global tetrInPlay
     global canHold
-    canHold = True
+    canHold = True # Reset player ability to hold
     t = Tetromino(bag[0]);
     bag.pop(0)
     if len(bag) == 0:
@@ -57,15 +57,16 @@ def updateBoard():
         for k in range(0, 4):
             board[t.y+shapeMasks[t.type][t.rotation][k][1]][t.x+shapeMasks[t.type][t.rotation][k][0]] = t.id
 
-    for (i, row) in enumerate(board):
-        if 0 not in row:
-            tetris(i)
 
 def tetris(i):
     global score
     score += 1000
-    board.pop(i)
-    board.append(copy.deepcopy(empty_board[0]))
+    k=i
+    while(k<len(board)-1):
+        board[k]=board[k+1]
+        k += 1
+    if tetrInHold != -1:
+        tetrominoes[tetrInHold].y = 30
 
 def hold():
     global tetrInHold
@@ -112,6 +113,9 @@ class Tetromino:
             self.kill()
 
     def kill(self):
+        for (i, row) in enumerate(board): # check for a tetris 
+            if 0 not in row:
+                tetris(i)
         spawnTetromino()
 
     def project(self):
@@ -155,7 +159,8 @@ class Tetromino:
             self.x += 1
 
     def __init__(self, type):
-        self.id = Tetromino.nextId()
+        self.id = 0x00B00000+Tetromino.nextId()
+        print("Generating new tetromino of " + type + " @ " + hex(self.id))
         self.x = 4 
         self.y = 21 
         self.type = type
