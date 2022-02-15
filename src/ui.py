@@ -10,6 +10,8 @@ key_drop = pygame.K_s
 key_hard_drop = pygame.K_SPACE
 key_rotate = pygame.K_w
 
+softDrop = False
+
 def checkHeld(left):
     if pygame.key.get_pressed()[key_left if left else key_right]:
         for i in range(0, 10):
@@ -35,5 +37,10 @@ def handleUI(events):
                 state.tetrominoes[state.tetrInPlay].hardDrop()
             if event.key == key_hold:
                 state.hold()
+            if event.key == key_drop:
+                softDrop = True
+        if event.type == pygame.KEYUP:
+            if event.key == key_drop:
+                softDrop = False
         if event.type == pygame.QUIT:
             running = False

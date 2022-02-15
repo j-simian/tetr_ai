@@ -13,25 +13,14 @@ saveOutput = False
 saveDir = ""
 tickCounter = 0
 
-def checkHeld(left):
-    if pygame.key.get_pressed()[ui.key_left if left else ui.key_right]:
-        for i in range(0, 10):
-            if left:
-                state.tetrominoes[state.tetrInPlay].moveLeft() 
-            else:
-                state.tetrominoes[state.tetrInPlay].moveRight() 
-        #state.tetrominoes[state.tetrInPlay].x = (0-state.tetrominoes[state.tetrInPlay].getLeftBoundary() if left else len(state.board[0])-1-state.tetrominoes[state.tetrInPlay].getRightBoundary())
-
-
 def main():
     global saveOutput
     global saveDir
     global tickCounter
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 2: # If cli argument -s is used, enable the saveOutput flag
         if sys.argv[1] == "-s":
             saveOutput = True
             saveDir = sys.argv[2]
-
     state.initBoard()
     state.spawnTetromino()
     gfx.initGfx()
@@ -40,7 +29,7 @@ def main():
     while running:
         render()
         clock.tick(60)
-        if tickCounter % 48 == 0: # 48/60 = 0.8s per update
+        if tickCounter % 48 == 0 or (ui.softDrop and tickCounter % 24 == 0): # 48/60 = 0.8s per update
             state.tickBoard()
         tickCounter += 1
         tickCounter %= 1000

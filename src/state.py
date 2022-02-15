@@ -61,8 +61,10 @@ def updateBoard():
 def tetris(i):
     global score
     global board
+    print("Tetris found! ")
     score += 1000
     k=i
+    print(f"{k}, {i}, {len(board)}")
     while(k<len(board)-1):
         board[k]=board[k+1]
         k += 1
@@ -76,6 +78,8 @@ def hold():
     if not canHold:
         return
     canHold = False
+    tetrominoes[tetrInPlay].y = 30
+    updateBoard()
     if tetrInHold == -1:
         tetrInHold = tetrInPlay
         spawnTetromino()
@@ -83,13 +87,12 @@ def hold():
         temp = tetrInHold
         tetrInHold = tetrInPlay
         tetrInPlay = temp
-    tetrominoes[tetrInHold].y = 30
     tetrominoes[tetrInPlay].x = 5
     tetrominoes[tetrInPlay].y = 21
 
 def tickBoard(): 
     if tetrInPlay != -1:
-        tetrominoes[tetrInPlay].tick(board)
+        tetrominoes[tetrInPlay].checkCollision(board)
         tetrominoes[tetrInPlay].y -= 1
     updateBoard()
 
@@ -117,14 +120,14 @@ class Tetromino:
     def getRightBoundary(self):
         return max(shapeMasks[self.type][self.rotation], key=lambda i : i[0])[0]
 
-    def tick(self, board):
-        if self.y + self.getLowerBoundary() <= 0:
+    def checkCollision(self, board):
+        if self.y + self.getLowerBoundary() < 0:
             self.kill()
         if self.project() == 0:
             self.kill()
 
     def kill(self):
-        for (i, row) in enumerate(board): # check for a tetris 
+        for (i, row) in enumerate(board): # check for a line clear 
             if 0 not in row:
                 tetris(i)
         spawnTetromino()
@@ -146,6 +149,7 @@ class Tetromino:
 
     def hardDrop(self):
         self.y -= self.project() 
+        self.checkCollision(board)
         updateBoard()
 
     def moveLeft(self):
@@ -174,7 +178,6 @@ class Tetromino:
 
     def __init__(self, type):
         self.id = 0x00B00000+Tetromino.nextId()
-        print("Generating new tetromino of " + type + " @ " + hex(self.id))
         self.x = 4 
         self.y = 21 
         self.type = type
