@@ -123,7 +123,7 @@ class Tetromino:
     def checkCollision(self, board):
         if self.y + self.getLowerBoundary() < 0:
             self.kill()
-        if self.project() == 0:
+        if self.project(board) == 0:
             self.kill()
 
     def kill(self):
@@ -132,7 +132,7 @@ class Tetromino:
                 tetris(i)
         spawnTetromino()
 
-    def project(self):
+    def project(self, board):
         can = True
         i = 0
         while can:
@@ -147,8 +147,8 @@ class Tetromino:
         return i
 
 
-    def hardDrop(self):
-        self.y -= self.project() 
+    def hardDrop(self, board):
+        self.y -= self.project(board) 
         self.checkCollision(board)
         updateBoard()
 

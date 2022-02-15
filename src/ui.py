@@ -43,4 +43,4 @@ def handleUI(events):
             if event.key == key_drop:
                 softDrop = False
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit()
