@@ -21,6 +21,7 @@ def checkHeld(left):
                 state.tetrominoes[state.tetrInPlay].moveRight() 
 
 def handleUI(events):
+    global softDrop
     for event in events:
         if event.type == pygame.KEYDOWN:
             if event.key == key_rotate:

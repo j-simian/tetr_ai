@@ -13,6 +13,9 @@ saveOutput = False
 saveDir = ""
 tickCounter = 0
 
+drop_rate = 36
+soft_drop_rate = 18
+
 def main():
     global saveOutput
     global saveDir
@@ -29,7 +32,7 @@ def main():
     while running:
         render()
         clock.tick(60)
-        if tickCounter % 48 == 0 or (ui.softDrop and tickCounter % 24 == 0): # 48/60 = 0.8s per update
+        if tickCounter % drop_rate == 0 or (ui.softDrop and tickCounter % soft_drop_rate == 0): # 48/60 = 0.8s per update
             state.tickBoard()
         tickCounter += 1
         tickCounter %= 1000
