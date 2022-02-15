@@ -1,5 +1,8 @@
 import copy
 import random
+
+spawn_height = 20
+
 empty_board = []
 board = []
 tetrominoes = {} 
@@ -52,10 +55,13 @@ def genBag():
 def updateBoard():
     global board
     global score
-    board = copy.deepcopy(empty_board)
-    for t in tetrominoes.values():
-        for k in range(0, 4):
-            board[t.y+shapeMasks[t.type][t.rotation][k][1]][t.x+shapeMasks[t.type][t.rotation][k][0]] = t.id
+    for i in range(0, len(board)):
+        for j in range(0, len(board[i])):
+            if board[i][j] == tetrInPlay:
+                board[i][j] = 0
+    t = tetrominoes[tetrInPlay] 
+    for k in range(0, 4):
+        board[t.y+shapeMasks[t.type][t.rotation][k][1]][t.x+shapeMasks[t.type][t.rotation][k][0]] = t.id
 
 
 def tetris(i):
@@ -66,10 +72,11 @@ def tetris(i):
     k=i
     print(f"{k}, {i}, {len(board)}")
     while(k<len(board)-1):
-        board[k]=board[k+1]
+        print(board[k])
+        board[k]=copy.deepcopy(board[k+1])
         k += 1
     if tetrInHold != -1:
-        tetrominoes[tetrInHold].y = 30
+        tetrominoes[tetrInHold].y = spawn_height
 
 def hold():
     global tetrInHold
@@ -88,11 +95,11 @@ def hold():
         tetrInHold = tetrInPlay
         tetrInPlay = temp
     tetrominoes[tetrInPlay].x = 5
-    tetrominoes[tetrInPlay].y = 21
+    tetrominoes[tetrInPlay].y = spawn_height
 
 def tickBoard(): 
     if tetrInPlay != -1:
-        tetrominoes[tetrInPlay].checkCollision(board)
+        tetrominoes[tetrInPlay].checkCollision()
         tetrominoes[tetrInPlay].y -= 1
     updateBoard()
 
@@ -120,19 +127,20 @@ class Tetromino:
     def getRightBoundary(self):
         return max(shapeMasks[self.type][self.rotation], key=lambda i : i[0])[0]
 
-    def checkCollision(self, board):
+    def checkCollision(self):
         if self.y + self.getLowerBoundary() < 0:
             self.kill()
-        if self.project(board) == 0:
+        if self.project() == 0:
             self.kill()
 
     def kill(self):
+        updateBoard()
         for (i, row) in enumerate(board): # check for a line clear 
             if 0 not in row:
                 tetris(i)
         spawnTetromino()
 
-    def project(self, board):
+    def project(self):
         can = True
         i = 0
         while can:
@@ -147,10 +155,9 @@ class Tetromino:
         return i
 
 
-    def hardDrop(self, board):
-        self.y -= self.project(board) 
-        self.checkCollision(board)
-        updateBoard()
+    def hardDrop(self):
+        self.y -= self.project() 
+        self.checkCollision()
 
     def moveLeft(self):
         can = True
@@ -179,7 +186,7 @@ class Tetromino:
     def __init__(self, type):
         self.id = 0x00B00000+Tetromino.nextId()
         self.x = 4 
-        self.y = 21 
+        self.y = spawn_height 
         self.type = type
 
 
