@@ -111,9 +111,13 @@ class Tetromino:
     rotation = 0
     globalIDCounter = 0
 
-    def rotate(self):
-       self.rotation = (self.rotation+1)%4
-       updateBoard()
+    def rotate(self, clockw):
+        self.rotation = (self.rotation+1 if clockw else self.rotation-1)%4
+        if self.x + self.getRightBoundary() >= len(board[0]) or self.x + self.getLeftBoundary() < 0:
+            self.rotation = (self.rotation-1 if clockw else self.rotation+1)%4
+            print("um rotate")
+        else:
+            updateBoard()
 
     def getLowerBoundary(self):
         return min(shapeMasks[self.type][self.rotation], key=lambda i : i[1])[1]
