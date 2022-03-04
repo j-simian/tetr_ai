@@ -1,11 +1,8 @@
 import sys
 import pygame
-from pygame.locals import *
-import time
-from threading import Timer
+import pygame.locals
 
 from board import Board
-from tetromino import Tetromino
 import gfx
 import ui
 
@@ -20,20 +17,23 @@ def main():
     global saveOutput
     global saveDir
     global tickCounter
-    if len(sys.argv) > 2: # If cli argument -s is used, enable the saveOutput flag
-        if sys.argv[1] == "-s":
+    if len(sys.argv) > 2: 
+        if sys.argv[1] == "-s": # If cli argument -s is used, enable the saveOutput flag
             saveOutput = True
             saveDir = sys.argv[2]
     board = Board()
     board.spawnTetromino()
+    ai_board = Board()
+    ai_board.spawnTetromino()
     gfx.initGfx()
     clock = pygame.time.Clock()
     running = True
     while running:
-        render(board)
+        render(ai_board if ui.whichBoard else board)
         clock.tick(60)
         if tickCounter % drop_rate == 0 or (ui.softDrop and tickCounter % soft_drop_rate == 0): # 48/60 = 0.8s per update
             board.tickBoard()
+            ai_board.tickBoard()
         tickCounter += 1
         tickCounter %= 1000
         ui.handleUI(pygame.event.get(), board)
@@ -47,7 +47,8 @@ def render(board):
         gfx.renderHold(board.tetrominoes[board.tetrInHold])
     gfx.swapBuffers()
     if saveOutput:
-        pygame.image.save(gfx.screen, saveDir+"img"+str(tickCounter).zfill(3)+".png", "")
+        fileName = saveDir + "img" + str(tickCounter).zfill(3) + ".png"
+        pygame.image.save(gfx.screen, fileName, "")
 
 
 if __name__ == "__main__":

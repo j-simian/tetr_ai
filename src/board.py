@@ -37,6 +37,8 @@ class Board:
 
     def spawnTetromino(self):
         self.canHold = True # Reset player ability to hold
+        if len(self.bag) == 0:
+            self.genBag()
         t = Tetromino(self.bag[0], self)
         self.bag.pop(0)
         if len(self.bag) == 0:

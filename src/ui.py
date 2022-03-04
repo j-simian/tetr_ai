@@ -11,6 +11,7 @@ key_rotate = pygame.K_w
 key_rotate_counter = pygame.K_q
 
 softDrop = False
+whichBoard = False
 
 def checkHeld(left, board):
     if pygame.key.get_pressed()[key_left if left else key_right]:
@@ -21,7 +22,7 @@ def checkHeld(left, board):
                 board.tetrominoes[board.tetrInPlay].moveRight() 
 
 def handleUI(events, board):
-    global softDrop
+    global softDrop, whichBoard
     for event in events:
         if event.type == pygame.KEYDOWN:
             if event.key == key_rotate:
@@ -42,6 +43,8 @@ def handleUI(events, board):
                 board.hold()
             elif event.key == key_drop:
                 softDrop = True
+            elif event.key == pygame.K_o:
+                whichBoard = not whichBoard
         elif event.type == pygame.KEYUP:
             if event.key == key_drop:
                 softDrop = False
