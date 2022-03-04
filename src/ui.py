@@ -1,6 +1,5 @@
 from threading import Timer
 import pygame
-import state
 
 key_pause = pygame.K_ESCAPE
 key_hold = pygame.K_LSHIFT
@@ -13,34 +12,34 @@ key_rotate_counter = pygame.K_q
 
 softDrop = False
 
-def checkHeld(left):
+def checkHeld(left, board):
     if pygame.key.get_pressed()[key_left if left else key_right]:
         for i in range(0, 10):
             if left:
-                state.tetrominoes[state.tetrInPlay].moveLeft() 
+                board.tetrominoes[board.tetrInPlay].moveLeft() 
             else:
-                state.tetrominoes[state.tetrInPlay].moveRight() 
+                board.tetrominoes[board.tetrInPlay].moveRight() 
 
-def handleUI(events):
+def handleUI(events, board):
     global softDrop
     for event in events:
         if event.type == pygame.KEYDOWN:
             if event.key == key_rotate:
-                state.tetrominoes[state.tetrInPlay].rotate(True)
+                board.tetrominoes[board.tetrInPlay].rotate(True)
             if event.key == key_rotate_counter:
-                state.tetrominoes[state.tetrInPlay].rotate(False)
+                board.tetrominoes[board.tetrInPlay].rotate(False)
             elif event.key == key_left:
-                state.tetrominoes[state.tetrInPlay].moveLeft()
-                r = Timer(0.30, checkHeld, [True])
+                board.tetrominoes[board.tetrInPlay].moveLeft()
+                r = Timer(0.30, checkHeld, [True, board])
                 r.start()
             elif event.key == key_right:
-                state.tetrominoes[state.tetrInPlay].moveRight()
-                r = Timer(0.30, checkHeld, [False])
+                board.tetrominoes[board.tetrInPlay].moveRight()
+                r = Timer(0.30, checkHeld, [False, board])
                 r.start()
             elif event.key == key_hard_drop:
-                state.tetrominoes[state.tetrInPlay].hardDrop()
+                board.tetrominoes[board.tetrInPlay].hardDrop()
             elif event.key == key_hold:
-                state.hold()
+                board.hold()
             elif event.key == key_drop:
                 softDrop = True
         elif event.type == pygame.KEYUP:

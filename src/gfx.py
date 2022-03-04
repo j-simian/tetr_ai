@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-import state
+import board
 
 screen_width = 1280
 screen_height = 720
@@ -58,8 +58,8 @@ def renderBag(bag, nextBag):
         for k in range(0, 4):
             currentColour = shapeColours[completeBag[i]]
             pygame.draw.rect(screen, currentColour, 
-                    Rect((screen_width/2+board_scale/2*10) + 50 + (state.shapeMasks[completeBag[i]][0][k][0])*board_scale,
-                         50+(state.shapeMasks[completeBag[i]][0][k][1])*board_scale+3.5*i*board_scale,
+                    Rect((screen_width/2+board_scale/2*10) + 50 + (board.Board.SHAPE_MASKS[completeBag[i]][0][k][0])*board_scale,
+                         50+(board.Board.SHAPE_MASKS[completeBag[i]][0][k][1])*board_scale+3.5*i*board_scale,
                          board_scale,
                          board_scale) )
             
@@ -68,8 +68,8 @@ def renderHold(tetromino):
     for k in range(0, 4):
         currentColour = shapeColours[tetromino.type]
         pygame.draw.rect(screen, currentColour, 
-                Rect((screen_width/2-board_scale/2*10) - 250 - (state.shapeMasks[tetromino.type][0][k][0])*board_scale,
-                     50+(state.shapeMasks[tetromino.type][0][k][1])*board_scale+3.5*1*board_scale,
+                Rect((screen_width/2-board_scale/2*10) - 250 - (board.Board.SHAPE_MASKS[tetromino.type][0][k][0])*board_scale,
+                     50+(board.Board.SHAPE_MASKS[tetromino.type][0][k][1])*board_scale+3.5*1*board_scale,
                      board_scale,
                      board_scale) )
             
