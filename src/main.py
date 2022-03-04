@@ -22,26 +22,26 @@ def main():
             saveOutput = True
             saveDir = sys.argv[2]
     board = Board()
-    board.spawnTetromino()
+    board.startGame(tickCounter)
     ai_board = Board()
-    ai_board.spawnTetromino()
+    ai_board.startGame(tickCounter)
     gfx.initGfx()
     clock = pygame.time.Clock()
     running = True
     while running:
         render(ai_board if ui.whichBoard else board)
         clock.tick(60)
-        if tickCounter % drop_rate == 0 or (ui.softDrop and tickCounter % soft_drop_rate == 0): # 48/60 = 0.8s per update
-            board.tickBoard()
-            ai_board.tickBoard()
+        if tickCounter % drop_rate == 0 or (ui.softDrop and tickCounter % soft_drop_rate == 0): # 48/60 = 0.8s per update.
+            board.tickBoard(tickCounter)
+            ai_board.tickBoard(tickCounter)
         tickCounter += 1
-        tickCounter %= 1000
         ui.handleUI(pygame.event.get(), board)
+        
     pygame.quit()
 
 def render(board):
     gfx.clearScreen()
-    gfx.renderBoard(board.board, board.tetrominoes)
+    gfx.renderBoard(board.board, board.tetrominoes, board.calculateFitness())
     gfx.renderBag(board.bag, board.nextBag)
     if board.tetrInHold != -1:
         gfx.renderHold(board.tetrominoes[board.tetrInHold])

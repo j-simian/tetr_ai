@@ -4,8 +4,8 @@ from tetromino import Tetromino
 
 class Board:
     SPAWN_HEIGHT = 20
-    SHAPES = ["O", "I", "T", "L", "J", "S", "Z"]
-    SHAPE_MASKS = { 
+    SHAPES = ["O", "I", "T", "L", "J", "S", "Z"] # List of the available pieces
+    SHAPE_MASKS = { # A dictionary of piece names to an array of masks for that piece (Each array contains 4 arrays of tuples, being the squares taken up by that shape rotated by an additional 90 degrees for each array)
             'O': [[(0, 1), (0, 0), (1, 1), (1, 0)], [(0, 1), (0, 0), (1, 1), (1, 0)], [(0, 1), (0, 0), (1, 1), (1, 0)], [(0, 1), (0, 0), (1, 1), (1, 0)]], 
             'I': [[(-1, 1), (0, 1), (1, 1), (2, 1)], [(1, 2), (1, 1), (1, 0), (1, -1)], [(-1, 0), (0, 0), (1, 0), (2, 0)], [(0, 2), (0, 1), (0, 0), (0, -1)]], 
             'T': [[(-1, 1), (0, 1), (1, 1), (0, 2)], [(0, 0), (0, 1), (1, 1), (0, 2)], [(-1, 1), (0, 1), (1, 1), (0, 0)], [(-1, 1), (0, 1), (0, 0), (0, 2)]], 
@@ -15,9 +15,16 @@ class Board:
             'Z': [[(1, 1), (0, 1), (0, 2), (-1, 2)], [(1, 1), (0, 1), (0, 0), (1, 2)], [(1, 0), (0, 0), (0, 1), (-1, 1)], [(0, 1), (-1, 1), (-1, 0), (0, 2)]]
             }
 
+    gameBeginFrame = -1 # this is set to the tick num on game start
+    gameEndFrame = -1 # set on game end to calculate duration
+    playing = False
+    death = False
+
     tetrominoes = {} 
     tetrInPlay = -1
     tetrInHold = -1
+
+    linesCleared = 0
 
     bag = random.sample(SHAPES, len(SHAPES))  
 
@@ -34,6 +41,25 @@ class Board:
             self.empty_board.append(row)
         self.board = copy.deepcopy(self.empty_board)
         self.tetronimoes = []
+        self.playing = False
+
+    def startGame(self, now):
+        self.gameBeginFrame = now
+        self.spawnTetromino()
+        self.playing = True
+
+    def endGame(self, now):
+        self.gameEndFrame = now
+        print(f"Game finished in time: {now-self.gameBeginFrame}")
+        self.playing = False
+
+    def calculateFitness(self):
+        if self.gameEndFrame == -1:
+            return -1
+        if self.death:
+            return self.linesCleared
+        else:
+            return 40 + (10000/(self.gameEndFrame - self.gameBeginFrame))
 
     def spawnTetromino(self):
         self.canHold = True # Reset player ability to hold
@@ -61,16 +87,14 @@ class Board:
 
 
     def clearLine(self, i):
-        print("Tetris found! ")
         self.score += 1000
         k=i
-        print(f"{k}, {i}, {len(self.board)}")
         while(k<len(self.board)-1):
-            print(self.board[k])
             self.board[k]=copy.deepcopy(self.board[k+1])
             k += 1
         if self.tetrInHold != -1:
             self.tetrominoes[self.tetrInHold].y = Board.SPAWN_HEIGHT
+        self.linesCleared += 1
 
     def hold(self):
         if not self.canHold:
@@ -88,9 +112,13 @@ class Board:
         self.tetrominoes[self.tetrInPlay].x = 5
         self.tetrominoes[self.tetrInPlay].y = Board.SPAWN_HEIGHT
 
-    def tickBoard(self): 
+    def tickBoard(self, tickCounter): 
+        if not self.playing:
+            return
         if self.tetrInPlay != -1:
             self.tetrominoes[self.tetrInPlay].checkCollision()
             self.tetrominoes[self.tetrInPlay].y -= 1
         self.updateBoard()
+        if self.linesCleared >= 3:
+            self.endGame(tickCounter)
 
