@@ -1,6 +1,7 @@
 import copy
 import random
 from tetromino import Tetromino
+import aiController
 
 class Board:
     SPAWN_HEIGHT = 20
@@ -32,7 +33,9 @@ class Board:
     score = 0
     canHold = True
 
-    def __init__(self):
+
+    def __init__(self, aiController):
+        self.playing = False
         self.empty_board = []
         for i in range(0, 40):
             row = []
@@ -41,7 +44,12 @@ class Board:
             self.empty_board.append(row)
         self.board = copy.deepcopy(self.empty_board)
         self.tetronimoes = []
-        self.playing = False
+        self.tetrInPlay = -1
+        self.tetrInHold = -1
+        if aiController is not None:
+            self.aiController = aiController 
+        else:
+            self.aiController = None
 
     def startGame(self, now):
         self.gameBeginFrame = now
@@ -59,7 +67,7 @@ class Board:
         if self.death:
             return self.linesCleared
         else:
-            return 40 + (10000/(self.gameEndFrame - self.gameBeginFrame))
+            return 40 + (50000/(self.gameEndFrame - self.gameBeginFrame))
 
     def spawnTetromino(self):
         self.canHold = True # Reset player ability to hold
@@ -121,4 +129,6 @@ class Board:
         self.updateBoard()
         if self.linesCleared >= 3:
             self.endGame(tickCounter)
+        if self.aiController is not None:
+            self.aiController.perform(self)
 

@@ -5,6 +5,7 @@ import pygame.locals
 from board import Board
 import gfx
 import ui
+import aiController
 
 saveOutput = False
 saveDir = ""
@@ -21,9 +22,10 @@ def main():
         if sys.argv[1] == "-s": # If cli argument -s is used, enable the saveOutput flag
             saveOutput = True
             saveDir = sys.argv[2]
-    board = Board()
+    board = Board(None)
     board.startGame(tickCounter)
-    ai_board = Board()
+    controller = aiController.aiController("")
+    ai_board = Board(controller)
     ai_board.startGame(tickCounter)
     gfx.initGfx()
     clock = pygame.time.Clock()
