@@ -20,7 +20,7 @@ class Tetromino:
         if self.x + self.getRightBoundary() >= len(self.board.board[0]) or self.x + self.getLeftBoundary() < 0:
             self.rotation = (self.rotation-1 if clockw else self.rotation+1)%4
         else:
-            self.board.updateBoard()
+            self.board.updateBoard(-1)
 
 
     def getLowerBoundary(self):
@@ -42,7 +42,7 @@ class Tetromino:
             self.kill()
 
     def kill(self):
-        self.board.updateBoard()
+        self.board.updateBoard(-1)
         for (i, row) in enumerate(self.board.board): # check for a line clear 
             if 0 not in row:
                 self.board.clearLine(i)
@@ -77,7 +77,7 @@ class Tetromino:
                 can = False
         if can:
             self.x -= 1
-        self.board.updateBoard()
+        self.board.updateBoard(-1)
 
     def moveRight(self):
         can = True
@@ -89,7 +89,7 @@ class Tetromino:
                 can = False
         if can:
             self.x += 1
-        self.board.updateBoard()
+        self.board.updateBoard(-1)
 
 
 

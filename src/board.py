@@ -1,7 +1,6 @@
 import copy
 import random
 from tetromino import Tetromino
-import aiController
 
 class Board:
     SPAWN_HEIGHT = 20
@@ -27,9 +26,6 @@ class Board:
 
     linesCleared = 0
 
-    bag = random.sample(SHAPES, len(SHAPES))  
-
-    nextBag = random.sample(SHAPES, len(SHAPES))  
     score = 0
     canHold = True
 
@@ -43,6 +39,8 @@ class Board:
                 row.append(0)
             self.empty_board.append(row)
         self.board = copy.deepcopy(self.empty_board)
+        self.bag = random.sample(Board.SHAPES, len(Board.SHAPES))  
+        self.nextBag = random.sample(Board.SHAPES, len(Board.SHAPES))  
         self.tetronimoes = []
         self.tetrInPlay = -1
         self.tetrInHold = -1
@@ -58,7 +56,6 @@ class Board:
 
     def endGame(self, now):
         self.gameEndFrame = now
-        print(f"Game finished in time: {now-self.gameBeginFrame}")
         self.playing = False
 
     def calculateFitness(self):
@@ -84,14 +81,18 @@ class Board:
         self.bag = self.nextBag
         self.nextBag = random.sample(Board.SHAPES, len(Board.SHAPES))
 
-    def updateBoard(self):
+    def updateBoard(self, tickCounter):
         for i in range(0, len(self.board)):
             for j in range(0, len(self.board[i])):
                 if self.board[i][j] == self.tetrInPlay:
                     self.board[i][j] = 0
+                if self.board[i][j] != 0 and self.board[i][j] != self.tetrInPlay and self.board[i][j] != self.tetrInHold and i > 20 and tickCounter != -1:
+                    self.death = True
+                    self.endGame(tickCounter)
         t = self.tetrominoes[self.tetrInPlay] 
         for k in range(0, 4):
             self.board[t.y+Board.SHAPE_MASKS[t.type][t.rotation][k][1]][t.x+Board.SHAPE_MASKS[t.type][t.rotation][k][0]] = t.id
+        
 
 
     def clearLine(self, i):
@@ -109,7 +110,7 @@ class Board:
             return
         self.canHold = False
         self.tetrominoes[self.tetrInPlay].y = 30
-        self.updateBoard()
+        self.updateBoard(-1)
         if self.tetrInHold == -1:
             self.tetrInHold = self.tetrInPlay
             self.spawnTetromino()
@@ -126,7 +127,7 @@ class Board:
         if self.tetrInPlay != -1:
             self.tetrominoes[self.tetrInPlay].checkCollision()
             self.tetrominoes[self.tetrInPlay].y -= 1
-        self.updateBoard()
+        self.updateBoard(tickCounter)
         if self.linesCleared >= 3:
             self.endGame(tickCounter)
         if self.aiController is not None:

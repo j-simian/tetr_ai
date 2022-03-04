@@ -1,16 +1,25 @@
 import random
+import neat
 
 class aiController:
     ACTIONS = ["left", "right", "drop", "hard_drop", "hold", "spin_cw", "spin_ccw", "spin2", "nil"]
 
-    def __init__(self, genome):
+    genome = ""
+    def __init__(self, genome, config):
         self.genome = genome
+        self.net = neat.nn.FeedForwardNetwork.create(self.genome, config)
 
-    def returnAction(self):
-        return random.choice(aiController.ACTIONS)
+    def returnAction(self, board):
+        inputs = []
+        for i,v in enumerate(board.board):
+            for j,x in enumerate(board.board[i]):
+                inputs.append(0 if board.board[i][j] == 0 or board.board[i][j] == board.tetrInPlay else 1)
+        outputs = self.net.activate(inputs)
+        action = outputs.index(max(outputs))
+        return aiController.ACTIONS[action]
 
     def perform(self, board):
-        action = self.returnAction()
+        action = self.returnAction(board)
         if action == "nil":
             pass
         elif action == "left":
