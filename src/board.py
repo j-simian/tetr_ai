@@ -1,4 +1,5 @@
 import copy
+import math
 import random
 from tetromino import Tetromino
 
@@ -62,9 +63,9 @@ class Board:
         if self.gameEndFrame == -1:
             return -1
         if self.death:
-            return self.linesCleared
+            return self.linesCleared*10 + (self.gameEndFrame - self.gameBeginFrame) / 100.0
         else:
-            return 40 + (50000/(self.gameEndFrame - self.gameBeginFrame))
+            return 400 + (50000/(self.gameEndFrame - self.gameBeginFrame))
 
     def spawnTetromino(self):
         self.canHold = True # Reset player ability to hold
@@ -86,7 +87,7 @@ class Board:
             for j in range(0, len(self.board[i])):
                 if self.board[i][j] == self.tetrInPlay:
                     self.board[i][j] = 0
-                if self.board[i][j] != 0 and self.board[i][j] != self.tetrInPlay and self.board[i][j] != self.tetrInHold and i > 20 and tickCounter != -1:
+                if self.board[i][j] != 0 and self.board[i][j] != self.tetrInPlay and self.board[i][j] != self.tetrInHold and i > 19 and tickCounter != -1:
                     self.death = True
                     self.endGame(tickCounter)
         t = self.tetrominoes[self.tetrInPlay] 

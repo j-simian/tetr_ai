@@ -17,7 +17,7 @@ tickCounter = 0
 drop_rate = 36
 soft_drop_rate = 18
 
-renderFlag = False
+renderFlag = True
 
 
 def main():
@@ -32,7 +32,7 @@ def main():
     # ai_board = Board(controller)
     # ai_board.startGame(tickCounter)
     gfx.initGfx()
-    clock = pygame.time.Clock()
+    # clock = pygame.time.Clock()
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, os.path.join(os.path.dirname(__file__), 'config-feedforward'))
 
     p = neat.Population(config)
@@ -41,12 +41,12 @@ def main():
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(5))
 
-    winner = p.run(eval_genomes, 10)
+    winner = p.run(eval_genomes, 300)
     print(winner)
-    running = True
-    while running:
-        renderFlag = True
-        eval_genome(winner, config)
+    # running = True
+    # while running:
+    #     renderFlag = True
+    #     eval_genome(winner, config)
     # running = True
     # while running:
     #     render(ai_board if ui.whichBoard else board)
@@ -70,10 +70,9 @@ def eval_genome(genome, config):
     board.startGame(tickCounter)
     running = True
     while running:
-        if renderFlag:
+        if renderFlag and tickCounter % 5 == 0:
             render(board)
-        if tickCounter % drop_rate == 0: # 48/60 = 0.8s per update.
-            board.tickBoard(tickCounter)
+        board.tickBoard(tickCounter)
         tickCounter += 1
         if board.gameEndFrame != -1:
             running = False

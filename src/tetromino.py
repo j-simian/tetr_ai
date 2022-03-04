@@ -17,7 +17,7 @@ class Tetromino:
 
     def rotate(self, clockw):
         self.rotation = (self.rotation+1 if clockw else self.rotation-1)%4
-        if self.x + self.getRightBoundary() >= len(self.board.board[0]) or self.x + self.getLeftBoundary() < 0:
+        if self.x + self.getRightBoundary() >= len(self.board.board[0]) or self.x + self.getLeftBoundary() < 0 or self.getLowerBoundary() < 0:
             self.rotation = (self.rotation-1 if clockw else self.rotation+1)%4
         else:
             self.board.updateBoard(-1)

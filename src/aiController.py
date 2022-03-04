@@ -14,6 +14,9 @@ class aiController:
         for i,v in enumerate(board.board):
             for j,x in enumerate(board.board[i]):
                 inputs.append(0 if board.board[i][j] == 0 or board.board[i][j] == board.tetrInPlay else 1)
+        for i,v in enumerate(board.board):
+            for j,x in enumerate(board.board[i]):
+                inputs.append(1 if board.board[i][j] == board.tetrInPlay else 0)
         outputs = self.net.activate(inputs)
         action = outputs.index(max(outputs))
         return aiController.ACTIONS[action]
