@@ -42,9 +42,6 @@ def swapBuffers():
     pygame.display.flip()
 
 def renderBoard(board, tetronimoes, score):
-    font = pygame.font.SysFont(None, 24) 
-    img = font.render(f"Score: {score}", True, colours[4]) 
-    screen.blit(img, (screen_width - 100, 50))
     for i in range(0, 21):
         for j in range(0, len(board[i])):
             currentColour = colours[1]

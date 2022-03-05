@@ -133,4 +133,3 @@ class Board:
             self.endGame(tickCounter)
         if self.aiController is not None:
             self.aiController.perform(self)
-

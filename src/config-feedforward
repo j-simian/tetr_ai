@@ -1,15 +1,14 @@
-#--- parameters for the XOR-2 experiment ---#
 
 [NEAT]
 fitness_criterion     = max
-fitness_threshold     = 40000
-pop_size			 = 100
+fitness_threshold     = 20000
+pop_size              = 500
 reset_on_extinction   = False
 
 [DefaultGenome]
 # node activation options
 activation_default      = sigmoid
-activation_mutate_rate  =0.0
+activation_mutate_rate  = 0.0
 activation_options      = sigmoid
 
 # node aggregation options
@@ -28,27 +27,29 @@ bias_replace_rate       = 0.1
 
 # genome compatibility options
 compatibility_disjoint_coefficient = 1.0
-compatibility_weight_coefficient   = 3.0
+compatibility_weight_coefficient   = 0.5
 
 # connection add/remove rates
-conn_add_prob           = 0.25
-conn_delete_prob        = 0.1
+conn_add_prob           = 0.5
+conn_delete_prob        = 0.5
 
 # connection enable options
 enabled_default         = True
-enabled_mutate_rate     = 0.5
+enabled_mutate_rate     = 0.01
 
 feed_forward            = True
-initial_connection      = unconnected
+#True
+initial_connection      = full
+#full
 
 # node add/remove rates
-node_add_prob           = 0.01
-node_delete_prob        = 0.01
+node_add_prob           = 0.2
+node_delete_prob        = 0.2
 
 # network parameters
-num_hidden              = 40
-num_inputs              =800
-num_outputs             = 9
+num_hidden              = 0
+num_inputs              = 400
+num_outputs             = 8
 
 # node response options
 response_init_mean      = 1.0
@@ -73,10 +74,10 @@ compatibility_threshold = 3.0
 
 [DefaultStagnation]
 species_fitness_func = max
-max_stagnation       = 1
-species_elitism      = 5
+max_stagnation       = 20
+species_elitism      = 2
 
 [DefaultReproduction]
 elitism            = 2
-survival_threshold = 0.2
-
+survival_threshold = 0.3
+#0.2

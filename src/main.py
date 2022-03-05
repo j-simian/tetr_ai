@@ -3,12 +3,14 @@ import pygame
 import pygame.locals
 import neat
 import os
+import multiprocessing
 
 from board import Board
 import gfx
 import ui
 import aiController
 
+CORES = 0
 
 saveOutput = False
 saveDir = ""
@@ -17,7 +19,7 @@ tickCounter = 0
 drop_rate = 36
 soft_drop_rate = 18
 
-renderFlag = True
+renderFlag = False
 
 
 def main():
@@ -40,7 +42,6 @@ def main():
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(5))
-
     winner = p.run(eval_genomes, 300)
     print(winner)
     # running = True
@@ -59,8 +60,12 @@ def main():
     pygame.quit()
 
 def eval_genomes(genomes, config):
+    global renderFlag
     for genome_id, genome in genomes:
         genome.fitness = eval_genome(genome, config)
+        if genome.fitness >= 20:
+            renderFlag = True
+            eval_genome(genome, config)
 
 
 def eval_genome(genome, config):
@@ -70,14 +75,14 @@ def eval_genome(genome, config):
     board.startGame(tickCounter)
     running = True
     while running:
-        if renderFlag and tickCounter % 5 == 0:
+        if renderFlag:
             render(board)
         board.tickBoard(tickCounter)
         tickCounter += 1
         if board.gameEndFrame != -1:
             running = False
     fitness = board.calculateFitness()
-    print(f"Genome {genome.key} fitness: {fitness}")
+    # print(f"Genome {genome.key} fitness: {fitness}")
     return fitness
 
 def render(board):
