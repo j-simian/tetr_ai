@@ -37,9 +37,8 @@ class aiController:
         return self.getEval(board) % 4
 
     def perform(self, board):
-        board.tetrominoes[board.tetrInPlay].x = self.getX(board)
         board.tetrominoes[board.tetrInPlay].rotation = self.getRot(board)
-        board.tetrominoes[board.tetrInPlay].hardDrop()
+        board.tetrominoes[board.tetrInPlay].x = self.getX(board)
 
     # def perform(self, board):
     #     action = self.returnAction(board)

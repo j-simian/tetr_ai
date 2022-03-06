@@ -90,7 +90,7 @@ class Board:
         height = sum(self.getAggregateHeights())
         bumpiness = self.getBumpiness()
         holes = self.countHoles()
-        fitness = -0.31 * height + 1.76 * lines - 0.06 * holes - 0.38 * bumpiness + (self.gameEndFrame - self.gameBeginFrame) / 5.0
+        fitness = -0.31 * height + 1.76 * lines - 0.06 * holes - 0.38 * bumpiness + (self.gameEndFrame - self.gameBeginFrame) 
         return fitness
         # if self.death:
         #     return self.linesCleared*10 + (self.gameEndFrame - self.gameBeginFrame) / 100.0
@@ -163,3 +163,6 @@ class Board:
             self.endGame(tickCounter)
         if self.aiController is not None:
             self.aiController.perform(self)
+        self.updateBoard(tickCounter)
+        self.tetrominoes[self.tetrInPlay].hardDrop()
+        self.updateBoard(tickCounter)
