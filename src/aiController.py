@@ -14,20 +14,31 @@ class aiController:
         for i,v in enumerate(board.board):
             for j,x in enumerate(board.board[i]):
                 inputs.append(0 if board.board[i][j] == 0 or board.board[i][j] == board.tetrInPlay else 1)
+        for i in board.SHAPES:
+            inputs.append(1 if board.tetrominoes[board.tetrInPlay].type == i else 0)
         outputs = self.net.activate(inputs)
         action = outputs.index(max(outputs))
         return aiController.ACTIONS[action]
 
-    def getX(self, board):
+    def getEval(self, board):
         inputs = []
         for i,v in enumerate(board.board):
             for j,x in enumerate(board.board[i]):
                 inputs.append(0 if board.board[i][j] == 0 or board.board[i][j] == board.tetrInPlay else 1)
+        for i in board.SHAPES:
+            inputs.append(1 if board.tetrominoes[board.tetrInPlay].type == i else 0)
         outputs = self.net.activate(inputs)
         return outputs.index(max(outputs))
 
+    def getX(self, board):
+        return self.getEval(board)//4
+
+    def getRot(self, board):
+        return self.getEval(board) % 4
+
     def perform(self, board):
         board.tetrominoes[board.tetrInPlay].x = self.getX(board)
+        board.tetrominoes[board.tetrInPlay].rotation = self.getRot(board)
         board.tetrominoes[board.tetrInPlay].hardDrop()
 
     # def perform(self, board):

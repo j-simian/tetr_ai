@@ -3,7 +3,6 @@ import pygame
 import pygame.locals
 import neat
 import os
-import multiprocessing
 
 from board import Board
 import gfx
@@ -19,7 +18,7 @@ tickCounter = 0
 drop_rate = 36
 soft_drop_rate = 18
 
-renderFlag = False
+renderFlag = True
 
 
 def main():
@@ -69,7 +68,7 @@ def eval_genomes(genomes, config):
 
 
 def eval_genome(genome, config):
-    global tickCounter
+    global tickCounter, renderFlag
     controller = aiController.aiController(genome, config)
     board = Board(controller) 
     board.startGame(tickCounter)

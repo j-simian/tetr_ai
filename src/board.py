@@ -59,13 +59,43 @@ class Board:
         self.gameEndFrame = now
         self.playing = False
 
+    def getAggregateHeights(self):
+        heights = [0]*10
+        for depth, row in enumerate(self.board):
+            for col, piece in enumerate(row):
+                if heights[col] < depth and piece != 0:
+                    heights[col] = depth
+        return heights
+
+    def getBumpiness(self):
+        heights = self.getAggregateHeights()
+        diffs = 0
+        for i in range(0, len(heights)-1):
+            diffs += abs(heights[i] - heights[i+1])
+        return diffs
+
+    def countHoles(self):
+        holes = 0
+        heights = self.getAggregateHeights()
+        for depth, row in enumerate(self.board):
+            for col, piece in enumerate(row):
+                if heights[col] > depth and piece == 0:
+                    holes += 1
+        return holes
+
     def calculateFitness(self):
         if self.gameEndFrame == -1:
             return -1
-        if self.death:
-            return self.linesCleared*10 + (self.gameEndFrame - self.gameBeginFrame) / 100.0
-        else:
-            return 400 + (50000/(self.gameEndFrame - self.gameBeginFrame))
+        lines = self.linesCleared
+        height = sum(self.getAggregateHeights())
+        bumpiness = self.getBumpiness()
+        holes = self.countHoles()
+        fitness = -0.31 * height + 1.76 * lines - 0.06 * holes - 0.38 * bumpiness + (self.gameEndFrame - self.gameBeginFrame) / 5.0
+        return fitness
+        # if self.death:
+        #     return self.linesCleared*10 + (self.gameEndFrame - self.gameBeginFrame) / 100.0
+        # else:
+        #     return 400 + (50000/(self.gameEndFrame - self.gameBeginFrame))
 
     def spawnTetromino(self):
         self.canHold = True # Reset player ability to hold
