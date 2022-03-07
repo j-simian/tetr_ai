@@ -3,6 +3,7 @@ import pygame
 import pygame.locals
 import neat
 import os
+import math
 
 from board import Board
 import gfx
@@ -19,6 +20,7 @@ drop_rate = 36
 soft_drop_rate = 18
 
 renderFlag = True
+skillFlag = False
 
 
 def main():
@@ -37,6 +39,7 @@ def main():
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, os.path.join(os.path.dirname(__file__), 'config-feedforward'))
 
     p = neat.Population(config)
+    # p = neat.Checkpointer.restore_checkpoint("./neat-checkpoint-64")
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
@@ -59,30 +62,37 @@ def main():
     pygame.quit()
 
 def eval_genomes(genomes, config):
-    global renderFlag
-    for genome_id, genome in genomes:
-        genome.fitness = eval_genome(genome, config)
-        if genome.fitness >= 20:
-            renderFlag = True
-            eval_genome(genome, config)
-
-
-def eval_genome(genome, config):
-    global tickCounter, renderFlag
-    controller = aiController.aiController(genome, config)
-    board = Board(controller) 
+    global tickCounter, skillFlag
+    board = Board() 
     board.startGame(tickCounter)
-    running = True
-    while running:
+    avgFitness = 0
+    for genome_id, genome in genomes:
+        controller = aiController.aiController(genome, config)
+        running = True
+        fitness = []
+        for i in range(0, 5):
+            board.tickBoard(tickCounter)
+            fitness.append(-(controller.getEval(board) - 1.0/(1 - math.exp(-board.calculateFitness())))**2)
+            if not skillFlag:
+                controller.perform(board)
+            else:
+                controller.performSkilled(board)
+            board.updateBoard(tickCounter)
+            board.tetrominoes[board.tetrInPlay].hardDrop()
+            board.updateBoard(tickCounter)
+            tickCounter += 1
+            if board.gameEndFrame != -1:
+                running = False
         if renderFlag:
             render(board)
-        board.tickBoard(tickCounter)
-        tickCounter += 1
-        if board.gameEndFrame != -1:
-            running = False
-    fitness = board.calculateFitness()
-    # print(f"Genome {genome.key} fitness: {fitness}")
-    return fitness
+        if not running:
+            board = Board() 
+            board.startGame(tickCounter)
+        genome.fitness = sum(fitness)/len(fitness)
+    genomefitnesses = [i.fitness for (k, i) in genomes]
+    if sum(genomefitnesses)/len(genomefitnesses) >= -0.5:
+        skillFlag = True
+
 
 def render(board):
     gfx.clearScreen()

@@ -31,7 +31,7 @@ class Board:
     canHold = True
 
 
-    def __init__(self, aiController):
+    def __init__(self):
         self.playing = False
         self.empty_board = []
         for i in range(0, 40):
@@ -45,10 +45,6 @@ class Board:
         self.tetronimoes = []
         self.tetrInPlay = -1
         self.tetrInHold = -1
-        if aiController is not None:
-            self.aiController = aiController 
-        else:
-            self.aiController = None
 
     def startGame(self, now):
         self.gameBeginFrame = now
@@ -83,14 +79,27 @@ class Board:
                     holes += 1
         return holes
 
+    def countBlocks(self):
+        blocks = 0
+        for row in self.board:
+            for piece in row:
+                if piece != 0:
+                    blocks += 1
+        return blocks
+            
+
     def calculateFitness(self):
         if self.gameEndFrame == -1:
             return -1
+
         lines = self.linesCleared
-        height = sum(self.getAggregateHeights())
-        bumpiness = self.getBumpiness()
-        holes = self.countHoles()
-        fitness = -0.31 * height + 1.76 * lines - 0.06 * holes - 0.38 * bumpiness + (self.gameEndFrame - self.gameBeginFrame) 
+        blocks = self.countBlocks()
+        # height = sum(self.getAggregateHeights())
+        # bumpiness = self.getBumpiness()
+        # holes = self.countHoles()
+        # fitness = -0.51 * height + 1.76 * lines - 0.36 * holes - 0.18 * bumpiness
+
+        fitness = lines + blocks
         return fitness
         # if self.death:
         #     return self.linesCleared*10 + (self.gameEndFrame - self.gameBeginFrame) / 100.0
@@ -116,7 +125,7 @@ class Board:
         for i in range(0, len(self.board)):
             for j in range(0, len(self.board[i])):
                 if self.board[i][j] == self.tetrInPlay:
-                    self.board[i][j] = 0
+                    self.board[i][j] = 0 
                 if self.board[i][j] != 0 and self.board[i][j] != self.tetrInPlay and self.board[i][j] != self.tetrInHold and i > 19 and tickCounter != -1:
                     self.death = True
                     self.endGame(tickCounter)
@@ -161,8 +170,3 @@ class Board:
         self.updateBoard(tickCounter)
         if self.linesCleared >= 3:
             self.endGame(tickCounter)
-        if self.aiController is not None:
-            self.aiController.perform(self)
-        self.updateBoard(tickCounter)
-        self.tetrominoes[self.tetrInPlay].hardDrop()
-        self.updateBoard(tickCounter)
